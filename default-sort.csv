@@ -1,0 +1,10 @@
+#,Benefit,Specific factor,Metric,Weight,Scale,How to calculate,MVP flag
+1,Availability,Number of bookable time-slots in next 7 days,Count of open appointment slots,20,0-20,"min(total_slots,20)",Yes
+2,Response speed,Time to confirm / reply to booking request,Hours (rounded),15,0-15,"IF hrs<=2 → 15; 2<hours<=12 → 10; 12<hours<=24 → 5; else 0",Yes
+3,Credentials verified,License or credential status checked by Really,Boolean,15,0/15,"15 if verified else 0",Yes
+4,Session length options,Choice of 30/45/60-min sessions,Count of distinct durations offered,10,0-10,"distinct_lengths*5 (cap 10)",No
+5,Languages supported,Extra client languages besides provider’s native,Count,10,0-10,"min(extra_langs,2)*5",No
+6,Client reviews,Average star rating (last 12 m),1–5 stars,10,0-10,"(avg_stars-3)*5, floor 0",No
+7,Talk Now availability,Offers instant on-demand sessions,Boolean,10,0/10,"10 if true else 0",No
+8,Sliding-scale pricing,Offers lower-cost sliding scale,Boolean,5,0/5,"5 if true else 0",No
+9,Community affiliation,Shares a client’s selected identity/community,Boolean,5,0/5,"5 if overlap else 0",No

@@ -60,7 +60,7 @@ Formulas for each factor live in **`Default‑Sort‑Algorithm‑v2.2.md`**.
 
 | Want to… | Do this |
 |----------|---------|
-| **Play in Excel** | 1) Clone / download repo.<br>2) Open `default-sort.csv`.<br>3) Replace sample data in column A with your provider list; scores populate automatically. |
+| **Open default‑sort.csv in Excel** | 1) Clone / download repo.<br>2) Open `default-sort.csv`.<br>3) Replace sample data in column A with your provider list; scores populate automatically. |
 | **Use in code** | 1) `pip install pandas` (or similar).<br>2) `df = pandas.read_csv("default-sort.csv")`.<br>3) Apply the formulas in `Default-Sort-Algorithm-v2.2.md` or translate them to SQL / pandas. |
 
 ---

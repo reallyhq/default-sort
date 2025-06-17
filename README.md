@@ -60,7 +60,7 @@ Formulas for each factor live in **`Default‑Sort‑Algorithm‑v2.2.md`**.
 
 | Want to… | Do this |
 |----------|---------|
-| **Play in Excel** | 1) Clone / download repo.<br>2) Open `Default Sort Algorithm v2.2.xlsx`.<br>3) Replace sample data in column A with your provider list; scores populate automatically. |
+| **Play in Excel** | 1) Clone / download repo.<br>2) Open `default-sort.csv`.<br>3) Replace sample data in column A with your provider list; scores populate automatically. |
 | **Use in code** | 1) `pip install pandas` (or similar).<br>2) `df = pandas.read_csv("default-sort.csv")`.<br>3) Apply the formulas in `Default-Sort-Algorithm-v2.2.md` or translate them to SQL / pandas. |
 
 ---
@@ -69,7 +69,6 @@ Formulas for each factor live in **`Default‑Sort‑Algorithm‑v2.2.md`**.
 | File | Purpose |
 |------|---------|
 | `default-sort.csv` | Clean, diff‑friendly data & weights (can be loaded anywhere). |
-| `Default Sort Algorithm v2.2.xlsx` | Ready‑to‑use spreadsheet with headers, sample rows, and score formulas. |
 | `Default‑Sort‑Algorithm‑v2.2.md` | Full spec: gate rules, weight rationale, formula breakdown. |
 | (optional) `examples/` | Worked samples or unit‑test fixtures if you add them later. |
 

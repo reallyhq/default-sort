@@ -19,7 +19,7 @@
 ---
 
 ## Why use it?
-* **Transparent.** Every weight, threshold, and formula lives in plain text (Markdown + CSV/XLS).  
+* **Transparent.** Every weight, threshold, and formula lives in plain text (Markdown + CSV).  
 * **Drop‑in.** Works in Excel, Google Sheets, or can be imported into code (Python, JS, etc.).  
 * **Client‑first.** Prioritises the attributes that matter most to people seeking help—speed, trust, and fit.  
 * **Brand‑agnostic.** No company‑specific hard‑coding; adapt weights to your own platform in minutes.

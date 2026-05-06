@@ -1,90 +1,60 @@
-# default-sort
+# Default Sort Algorithm — Really Global
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+This repository is the public, open-source specification of the algorithm Really Global uses to order providers in search results. The algorithm is published in full so that providers, clients, and external observers can understand and verify how providers are ranked on the platform.
 
-**Open‑source, Excel‑backed algorithm that ranks care providers (0 – 100 pts) by live availability, response speed, credential verification, reviews, and other client‑centric factors.**
+## Current Version
 
----
+**v3.1** (May 2026) — adds Real-Time Audio Translation Enablement as a 5th base score factor. Base score range expands from 0–80 to 0–90; maximum effective final score from 88 to 99.
 
-## Table of Contents
-1. [Why use it?](#why-use-it)
-2. [How it works](#how-it-works)  
-   &nbsp;&nbsp;• [Gate logic](#gate-logic)  
-   &nbsp;&nbsp;• [Scoring factors](#scoring-factors)
-3. [Quick start](#quick-start)
-4. [Files in this repo](#files-in-this-repo)
-5. [Contributing](#contributing)
-6. [License](#license)
+See [`Default-Sort-Algorithm-v3.1.md`](./Default-Sort-Algorithm-v3.1.md) for the full specification.
 
----
+## What is Default Sort
 
-## Why use it?
-* **Transparent.** Every weight, threshold, and formula lives in plain text (Markdown + CSV).  
-* **Drop‑in.** Works in Excel, Google Sheets, or can be imported into code (Python, JS, etc.).  
-* **Client‑first.** Prioritises the attributes that matter most to people seeking help—speed, trust, and fit.  
-* **Brand‑agnostic.** No company‑specific hard‑coding; adapt weights to your own platform in minutes.
+Default Sort is the algorithm that determines the order of providers when a client browses or searches for mental health providers on Really Global. Given a population of providers (those matching a given URL constraint, e.g. a specific city + specialty page), the algorithm produces an ordered list.
 
----
+The algorithm runs in three stages:
 
-## How it works
+1. **Filter** — A provider must have a bookable calendar slot in the next 14 days OR have Talk Now (real-time connection) currently active. Providers who fail the filter are not shown.
 
-### Gate logic
-| Gate | Rule | Purpose |
-|------|------|---------|
-| 1 | ≥ 1 bookable slot in next 7 days | Filters out unavailable providers |
-| 2 | Auto‑verified license/credential | Ensures baseline trust |
-| 3 | Split list into **Verified** vs **Non‑Verified** | Keeps unverified options visible but clearly separated |
+2. **Tier** — Surviving providers are placed in one of four tiers based on Verified status and Talk Now active status. Tier ordering is fixed: Verified + Talk Now active > Verified + Calendar > Not Verified + Talk Now active > Not Verified + Calendar.
 
-After passing the gates, providers are scored (0–100) on nine factors and sorted high‑to‑low within their group.
+3. **Score** — Within each tier, providers are ranked by `final_score = base_score × reliability_multiplier`, where `base_score` sums five operational factors (max 90) and `reliability_multiplier` reflects the provider's recent operational reliability.
 
-### Scoring factors
+## Files in This Repository
 
-| # | Factor | Max pts |
-|---|--------|--------:|
-| 1 | Availability (7‑day open slots) | 20 |
-| 2 | Response speed (hours) | 15 |
-| 3 | Credentials verified | 15 |
-| 4 | Session‑length options | 10 |
-| 5 | Languages supported | 10 |
-| 6 | Client reviews | 10 |
-| 7 | Talk Now availability | 10 |
-| 8 | Sliding‑scale pricing | 5 |
-| 9 | Community affiliation | 5 |
-|   | **Total** | **100** |
+- [`Default-Sort-Algorithm-v3.1.md`](./Default-Sort-Algorithm-v3.1.md) — Full specification of v3.1
+- [`default-sort.csv`](./default-sort.csv) — Machine-readable factor table and supporting structure
+- [`README.md`](./README.md) — This file
+- [`LICENSE`](./LICENSE) — MIT License
 
-Formulas for each factor live in **`Default‑Sort‑Algorithm‑v2.2.md`**.
+## Principles
 
----
+The algorithm is built on three principles:
 
-## Quick start
+- **Operational, not clinical.** Every factor in the algorithm reflects an observable operational fact about the provider (availability, experience, credentials, reviews, capacity to serve cross-language sessions, recent reliability events). The platform makes no claim about the clinical quality of any individual provider's care.
 
-| Want to… | Do this |
-|----------|---------|
-| **Open default‑sort.csv in Excel** | 1) Clone / download repo.<br>2) Open `default-sort.csv`.<br>3) Replace sample data in column A with your provider list; scores populate automatically. |
-| **Use in code** | 1) `pip install pandas` (or similar).<br>2) `df = pandas.read_csv("default-sort.csv")`.<br>3) Apply the formulas in `Default-Sort-Algorithm-v2.2.md` or translate them to SQL / pandas. |
+- **Marketplace-neutral.** No provider receives a hidden boost or penalty. There is no preferred-partner status, no advertising-influenced ranking, no editorial promotion. Two providers with identical signals receive identical rankings.
 
----
+- **Open-source and versioned.** This repository is published under the MIT License. Production code and this specification must remain in sync; CI checks fail if the algorithm code changes without a paired specification update.
 
-## Files in this repo
-| File | Purpose |
-|------|---------|
-| `default-sort.csv` | Clean, diff‑friendly data & weights (can be loaded anywhere). |
-| `Default‑Sort‑Algorithm‑v2.2.md` | Full spec: gate rules, weight rationale, formula breakdown. |
-| (optional) `examples/` | Worked samples or unit‑test fixtures if you add them later. |
+## Version Sync Commitment
 
----
+Really Global commits to keeping the production algorithm and this public specification in lockstep. Any change to the algorithm in production requires a paired update to this repository in the same release window.
 
-## Contributing
-We love PRs 🎉
+## Version History
 
-1. **Fork** → `git checkout -b feature/my-improvement`  
-2. Make your change + add a test / demo row if relevant  
-3. `git commit -m "Explain what you changed"`  
-4. `git push` and open a **Pull Request**
+- **v3.1** (May 2026) — Adds Real-Time Audio Translation Enablement as 5th base score factor (10 points binary, awarded uniformly across all SERPs). Base score range 0–80 → 0–90. Maximum effective score 88 → 99. The v3.0 three-stage architecture, four pre-v3.1 base score factors, Bayesian Reviews formula, Reliability multiplier, tier definitions, and Suspended-not-Platform-suspended distinction are preserved unchanged.
 
-See `CONTRIBUTING.md` (if present) for coding style and branch conventions.
+- **v3.0** (April 2026) — Initial public release. Three-stage architecture (Filter → Tier → Score). Four base score factors (Availability, Experience, Credentials, Bayesian-weighted Reviews). Reliability Score multiplier with cold-start handling. Supersedes the unpublished v2.x drafts.
 
----
+## Help Center
+
+For a plain-language explanation of how providers are ordered, see Really Global's Help Center "Why this order?" page (linked from every search results page, available in all 57 supported languages).
+
+## Questions or Issues
+
+If you believe you've found a discrepancy between this specification and the production algorithm, or have questions about how the algorithm works, please open an issue on this repository.
 
 ## License
-Released under the [MIT License](LICENSE) – free for personal and commercial use. Attribution welcome but not required.
+
+MIT License. See [`LICENSE`](./LICENSE) for details.

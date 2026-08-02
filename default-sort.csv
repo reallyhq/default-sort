@@ -1,65 +1,29 @@
-Default Sort Algorithm v3.1 — Public Specification,,,,,,
-Source spec for github.com/reallyhq/default-sort. License: MIT.,,,,,,
-,,,,,,
-Three-stage pipeline: Filter (Gate 1) → Tier (Gate 2 + Talk Now sub-tier + Gate 3) → Score (5 base factors × Reliability multiplier). Providers must have a completed Profile or Specialty page to appear in search results.,,,,,,
-,,,,,,
-GATE 1,AVAILABILITY,YES,100%,Show provider pages in search results only if a bookable calendar slot exists in the next 14 days OR Talk Now toggle is currently active. No providers display unless this requirement is met.,,
-GATE 2,VERIFIED,YES,100%,"Verified providers are always displayed above all Non-Verified providers. Within each Verified status, the Talk Now sub-tier applies (see below).",,
-TIER SUB-MECHANIC,TALK NOW ACTIVE,YES/NO,100%,Within Verified bucket: Tier 1 = Verified + Talk Now active; Tier 2 = Verified + Calendar available (no Talk Now). Within Non-Verified bucket: Tier 3 = Not Verified + Talk Now active; Tier 4 = Not Verified + Calendar available (no Talk Now).,,
-,,,,,,
-BASE SCORE FACTORS (within-tier ranking; final_score = base_score × reliability_multiplier),,,,,,
-,,,,,,
-#,Benefit,Specific Factor,Metric,Weight,Scale,How to calculate
-1,Customer Experience: Availability,Amount of Availability,number,20,Score 0-20. Continuous. Number of bookable calendar slots in the next 14 days. Higher availability earns more points up to maximum.,Pulled from provider calendar. Dynamic and ongoing.
-2,Quality: Provider Experience,Length of professional experience,number,20,"Score 0-20. For Licensed: scaled by years in practice up to 20+ years. For Coaches: scaled by completed coaching hours up to 3,000+ hours. For Mentors: scaled by completed practice hours up to 2,000+ hours.",Pulled from provider profile (Years in Practice / Completed Coaching Hours / Completed Practice Hours).
-3,Quality: Provider Credentials,Licensed or certified providers,number,20,Score 0-20. Continuous based on number and type of verified credentials held. More verified credentials earn more points up to maximum.,Maps to verified licenses and certifications from provider profiles.
-4,Quality: Client Feedback,Client Reviews (Bayesian-weighted),weighted rating,20,"Score 0-20. Bayesian formula: weighted_rating = (v / (v + m)) × R + (m / (v + m)) × C with m = 5. Points = max(0, (weighted_rating − 1) × 5).",v = number of published reviews for the provider. R = provider mean rating. C = platform-wide mean rating recomputed nightly. Tech-only and removed reviews excluded from both R and C.
-5,Customer Experience: Cross-language reach,Real-Time Audio Translation Enablement,yes/no (binary),10,"Score 0 or 10 (binary). 10 points if Real-Time Audio Translation enabled on provider account (default-on at account creation); 0 points if provider has opted out. Awarded uniformly across all SERPs (population-multiplier capacity signal, not SERP-context signal).",Pulled from provider account-level translation setting. Default-on at account creation; opting out costs 10 points relative to platform default.
-,,TOTAL,,90,,
-,,,,,,
-RELIABILITY SCORE MULTIPLIER (applied to base_score; final_score = base_score × multiplier),,,,,,
-,,,,,,
-Reliability Tier,Score Range,Multiplier,Notes,,,
-Trusted,90-100,1.10×,Highest reliability tier. Cold-start (<5 reliability events) defaults to Trusted.,,,
-Standard,75-89,1.00×,Standard reliability tier (no multiplier effect).,,,
-On Notice,60-74,0.85×,Reliability concerns; reduced visibility.,,,
-Suspended,<60,0.70×,Talk Now suspended (toggle forced off; provider remains visible via calendar path only). Multiplier persists 60 days after a 30-day Talk Now suspension lifts as recovery period.,,,
-,,,,,,
-"Reliability Score is computed from operational events (on-time pickup rate, late pickup rate, no-show rate, decline rate, session completion rate) over a rolling 30-day window. Cold-start providers (<5 events) default to Trusted (1.10×).",,,,,,
-,,,,,,
-MAXIMUM EFFECTIVE FINAL SCORE: 90 × 1.10 = 99,,,,,,
-,,,,,,
-"TIEBREAKERS (within tier, after final_score)",,,,,,
-1,Most recent profile update timestamp (DESC — more recently updated first),,,,,
-2,Provider ID (ASC — for deterministic stability),,,,,
-,,,,,,
-KEY DEFINITIONS,,,,,,
-"""Suspended"" means Talk Now suspended NOT platform suspended","A ""Suspended"" provider's Talk Now toggle is forced off and the Talk Now button is hidden from their profile. They continue to appear in search results via the calendar-availability path (Tier 2 or Tier 4) and their scheduled-session functionality is unaffected. Platform-level suspension is a separate Trust & Safety action and is NOT this algorithm.",,,,,
-Cold-start handling,Providers with fewer than 5 reliability events default to the Trusted multiplier (1.10×). The platform does not penalize new providers for absence of operational history.,,,,,
-Post-suspension recovery,"After a 30-day Talk Now suspension is lifted, the provider's effective multiplier is held at 0.70× for 60 days as a recovery window, after which it reflects the then-current Reliability Score normally.",,,,,
-No personalization,Default Sort returns the same order for every user. Personalization is post-MVP.,,,,,
-No new-provider boost,Cold-start handled neutrally via Bayesian shrinkage on Reviews and Trusted multiplier default. The platform does not apply favorable hidden boosts to new providers.,,,,,
-,,,,,,
-CPOM POSTURE,,,,,,
-"Every factor in this algorithm is operational, not clinical. The platform observes facts (slot counts, credentials held, client speech in reviews, performance against operational commitments, capacity to serve cross-language sessions) and does NOT judge clinical care quality. The algorithm orders a directory; it does not practice medicine.",,,,,,
-,,,,,,
-DEFERRED FACTORS — POST-MVP,,,,,,
-Factor,Reason for deferral,,,,,
-Client Outcomes (pre/post-test deltas),Aggregating clinical screening tools into a sort signal moves the platform closer to making care-quality determinations. Deferred pending separate clinical and legal review.,,,,,
-Response speed,Pending dedicated review.,,,,,
-Session length options,Pending dedicated review.,,,,,
-Languages supported (as fluency signal),"Different from Real-Time Audio Translation Enablement (Factor 5), which is a population-multiplier capacity signal. Native fluency as a separate sort factor is pending dedicated review.",,,,,
-Sliding-scale pricing,Pending dedicated review.,,,,,
-Community affiliation,Pending dedicated review.,,,,,
-Activity-based variant of Translation Enablement,Whether Factor 5's 10 points should eventually be tied to actual translated session activity (rather than just the binary toggle state) is deferred. Decision informed by empirical data on opt-out rates and gaming behavior.,,,,,
-Magnitude retuning of Translation Enablement,The 10-point value is provisional. Empirical data on ranking effects in mature locales may indicate the value should be retuned upward or downward.,,,,,
-Translation-session reliability mechanism,"An auto-off-style mechanism analogous to Talk Now's auto-off triggers, specific to translation-session quality (completion rate, client cancellation, latency thresholds), is post-MVP.",,,,,
-Personalization,Default Sort returns the same order for every user. Personalization is post-MVP.,,,,,
-,,,,,,
-OPEN-SOURCE COMMITMENT,,,,,,
-This algorithm is published in full at https://github.com/reallyhq/default-sort under MIT license. Production code and the public spec are versioned together; any change to one requires a paired change to the other in the same release window. CI gates enforce that algorithm code changes require paired spec updates.,,,,,,
-,,,,,,
-VERSION HISTORY,,,,,,
-Version,Date,Notes,,,,
-v3.1,May 2026,"Adds Real-Time Audio Translation Enablement as 5th base score factor (10 points binary, awarded uniformly across all SERPs). Base score range 0-80 → 0-90. Maximum effective score 88 → 99. The v3.0 three-stage architecture, four pre-v3.1 base score factors, Bayesian Reviews formula, Reliability multiplier, tier definitions, and Suspended-not-Platform-suspended distinction are preserved unchanged.",,,,
-v3.0,April 2026,"Initial public release. Three-stage architecture (Filter → Tier → Score). Four base score factors (Availability, Experience, Credentials, Bayesian-weighted Reviews). Reliability Score multiplier with cold-start handling. Supersedes unpublished v2.x drafts.",,,,
+section,item,type,max_points_or_value,rule,source,notes
+metadata,algorithm_version,version,3.3,Approved pre-launch public specification,Default Sort BRD v2.4,Not yet running in production
+pipeline,stage_1_filter,gate,required,Otherwise-eligible provider has at least one bookable slot in the next 14 days OR Talk Now active for the present hour,Calendar and Talk Now state,Provider is hidden when neither condition is true
+pipeline,tier_1,tier,1,Verified AND Talk Now active,Independent verification outcome and Talk Now state,Tier ordering always defeats within-tier score
+pipeline,tier_2,tier,2,Verified AND Talk Now inactive with calendar availability,Independent verification outcome and calendar,Tier ordering always defeats within-tier score
+pipeline,tier_3,tier,3,Not Verified AND Talk Now active,Independent verification outcome and Talk Now state,Tier ordering always defeats within-tier score
+pipeline,tier_4,tier,4,Not Verified AND Talk Now inactive with calendar availability,Independent verification outcome and calendar,Tier ordering always defeats within-tier score
+factor,availability,continuous,20,"slots = bookable slots in 14 days; if slots >= 2 then raw = 20 + min(slots - 2,18) * (80/18) else raw = 0; points = raw/100 * 20",Connected provider calendar,Zero or one slot earns zero; cap reached at 20 slots
+factor,experience_therapist,category_scale,20,Years in Practice: 0-2 years raw 50 then +10 per existing experience tier capped at raw 100 for 20+ years,Provider-attested category and experience field,Every Therapist permission status uses this scale; missing field earns zero
+factor,experience_nurses_and_more,category_scale,20,Years in Practice: 0-2 years raw 50 then +10 per existing experience tier capped at raw 100 for 20+ years,Provider-attested category and experience field,Every Nurses & More permission status uses this scale; missing field earns zero
+factor,experience_coach,category_scale,20,Completed Coaching Hours: 0-500 hours raw 40 then +10 per existing experience tier capped at raw 100 for 3000+ hours,Provider-attested category and experience field,Missing field earns zero
+factor,experience_mentor,category_scale,20,Completed Practice Hours: 0-500 hours raw 40 then +10 per existing experience tier capped at raw 100 for 2000+ hours,Provider-attested category and experience field,Missing field earns zero
+factor,credential_breadth,group_count,20,"Three binary groups: current public License/Registration/Permit; public Academic Degree; current public Professional Certificate. 0 groups=0; 1=10; 2=15; 3=20",Provider-supplied public credential records,Count groups not records; memberships and status-only claims do not count
+factor,reviews,bayesian,20,"v=included rating count; R=official provider mean; m=5; C=platform mean; weighted=(v/(v+m))*R+(m/(v+m))*C; v=0 uses C; points=min(20,max(0,(weighted-1)*5))",Official Review System average and count,Default Sort never reclassifies reviews
+factor,translation_enablement,binary,10,10 when Real-Time Audio Translation is enabled and 0 when disabled,Provider account-level translation setting,Default-on and awarded uniformly across all SERPs
+score,base_score,formula,90,availability + experience + credential_breadth + reviews + translation,Five factor outputs,Applied within tier
+reliability,fast_answer,event_points,100,Named-provider Talk Now ring answered from 0 through 30 seconds,Talk Now operational event,Eligible for Reliability Score
+reliability,on_time_answer,event_points,85,Named-provider Talk Now ring answered after 30 seconds and before 60-second timeout,Talk Now operational event,Eligible for Reliability Score
+reliability,miss,event_points,0,Named-provider Talk Now ring not answered before 60-second timeout,Talk Now operational event,Eligible for Reliability Score
+reliability,reliability_score,formula,0-100,"30-day eligible answer-point average * 0.90 + Session Completion Rate * 0.10",Eligible named-provider Talk Now events and accepted sessions reaching in_progress,Fan-out non-answers are operational-only and excluded
+reliability,boosted_multiplier,multiplier,1.10,Active Talk Now provider with at least five eligible events and Reliability Score 90-100,Reliability Score,Applies only within Tier 1 or Tier 3
+reliability,neutral_multiplier,multiplier,1.00,Active Talk Now provider below 90 OR fewer than five eligible events,Reliability Score,Insufficient-history providers are neutral
+reliability,outside_talk_now,multiplier,none,Talk Now off never enabled or suspended,Talk Now state,Base score alone in Tier 2 or Tier 4
+suspension,seven_day_pause,rule,2 misses,Two misses in a rolling seven-day window,Eligible Talk Now misses,Talk Now suspension only
+suspension,thirty_day_pause,rule,5 incidents,Five incidents in 30 days triggers 30-day pause and Reliability Recertification,Talk Now incident history,No added 0.70 multiplier or 60-day recovery penalty
+tiebreaker,profile_updated_at,order,1,Descending: most recently updated profile first,Provider profile timestamp,Applied after final score within tier
+tiebreaker,provider_id,order,2,Ascending for deterministic stability,Provider ID,Applied after profile update timestamp
+principle,no_paid_placement,control,required,No provider may buy a score tier or position; Verification Fee does not guarantee status and cannot be bid,Public product rule,Verified outcome may affect tier as disclosed
+principle,clinical_neutrality,control,required,Algorithm orders eligible providers and does not select a provider or judge clinical quality,Public product rule,Client choice filters semantic relevance and explicit sorts may override default order

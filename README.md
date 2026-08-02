@@ -1,60 +1,63 @@
 # Default Sort Algorithm — Really Global
 
-This repository is the public, open-source specification of the algorithm Really Global uses to order providers in search results. The algorithm is published in full so that providers, clients, and external observers can understand and verify how providers are ranked on the platform.
+This repository publishes the rules Really Global uses to order eligible providers in marketplace results. Publishing the rules lets providers, clients, and outside observers understand the order and check whether it is being applied as described.
 
-## Current Version
+## Current approved specification
 
-**v3.1** (May 2026) — adds Real-Time Audio Translation Enablement as a 5th base score factor. Base score range expands from 0–80 to 0–90; maximum effective final score from 88 to 99.
+**v3.3 — August 2026**
 
-See [`Default-Sort-Algorithm-v3.1.md`](./Default-Sort-Algorithm-v3.1.md) for the full specification.
+See [Default-Sort-Algorithm-v3.3.md](./Default-Sort-Algorithm-v3.3.md) for the full public specification and [default-sort.csv](./default-sort.csv) for the machine-readable factor table.
 
-## What is Default Sort
+Really Global is pre-launch. v3.3 is the approved implementation target; this repository does not claim that Default Sort is already running in production. When implementation begins, the product and public specification must be released and maintained in lockstep.
 
-Default Sort is the algorithm that determines the order of providers when a client browses or searches for mental health providers on Really Global. Given a population of providers (those matching a given URL constraint, e.g. a specific city + specialty page), the algorithm produces an ordered list.
+## What Default Sort does
 
-The algorithm runs in three stages:
+Every marketplace must display results in some order. Without a disclosed rule, the database still creates an accidental and unstable order. Neutrality therefore does not mean randomness. It means that the same published, non-clinical rules apply consistently and that providers cannot buy placement.
 
-1. **Filter** — A provider must have a bookable calendar slot in the next 14 days OR have Talk Now (real-time connection) currently active. Providers who fail the filter are not shown.
+Default Sort runs in three stages:
 
-2. **Tier** — Surviving providers are placed in one of four tiers based on Verified status and Talk Now active status. Tier ordering is fixed: Verified + Talk Now active > Verified + Calendar > Not Verified + Talk Now active > Not Verified + Calendar.
+1. **Filter** — shows only otherwise-eligible providers who have a bookable calendar slot within 14 days or Talk Now active.
+2. **Tier** — groups visible providers by Verified status and current Talk Now availability.
+3. **Score** — orders providers within a tier using five base-score factors. The Talk Now Reliability multiplier applies only when active Talk Now providers are ordered against one another.
 
-3. **Score** — Within each tier, providers are ranked by `final_score = base_score × reliability_multiplier`, where `base_score` sums five operational factors (max 90) and `reliability_multiplier` reflects the provider's recent operational reliability.
+The five base-score factors are:
 
-## Files in This Repository
-
-- [`Default-Sort-Algorithm-v3.1.md`](./Default-Sort-Algorithm-v3.1.md) — Full specification of v3.1
-- [`default-sort.csv`](./default-sort.csv) — Machine-readable factor table and supporting structure
-- [`README.md`](./README.md) — This file
-- [`LICENSE`](./LICENSE) — MIT License
+- Amount of Availability — 20 points
+- Professional Preparation: Experience — 20 points
+- Professional Preparation: Credential Breadth — 20 points
+- Client Reviews, Bayesian-weighted — 20 points
+- Real-Time Audio Translation Enablement — 10 points
 
 ## Principles
 
-The algorithm is built on three principles:
+- **Ordering, not clinical ranking.** A position is not a claim that one provider is clinically better or right for a particular client.
+- **Attributed and operational inputs.** The rules use provider attestations, client ratings, independent verification outcomes, and disclosed service events.
+- **No paid placement.** A provider cannot buy a score, tier, or position. Paying for verification does not guarantee Verified status and cannot be used to bid for placement.
+- **Client choice controls.** Filters, user-selected sorts, semantic relevance, explicit matching preferences, and the client's own decision may change or override the default order.
+- **Open and versioned.** Material changes to the running algorithm require a matching update here in the same release window once the algorithm is implemented.
 
-- **Operational, not clinical.** Every factor in the algorithm reflects an observable operational fact about the provider (availability, experience, credentials, reviews, capacity to serve cross-language sessions, recent reliability events). The platform makes no claim about the clinical quality of any individual provider's care.
+## Files
 
-- **Marketplace-neutral.** No provider receives a hidden boost or penalty. There is no preferred-partner status, no advertising-influenced ranking, no editorial promotion. Two providers with identical signals receive identical rankings.
+- [Default-Sort-Algorithm-v3.3.md](./Default-Sort-Algorithm-v3.3.md) — current approved public specification
+- [default-sort.csv](./default-sort.csv) — machine-readable factors, gates, tiers, multiplier, and tiebreakers
+- [Default-Sort-Algorithm-v3.1.md](./Default-Sort-Algorithm-v3.1.md) — prior public specification retained for history
+- [LICENSE](./LICENSE) — MIT License
 
-- **Open-source and versioned.** This repository is published under the MIT License. Production code and this specification must remain in sync; CI checks fail if the algorithm code changes without a paired specification update.
+## Version history
 
-## Version Sync Commitment
-
-Really Global commits to keeping the production algorithm and this public specification in lockstep. Any change to the algorithm in production requires a paired update to this repository in the same release window.
-
-## Version History
-
-- **v3.1** (May 2026) — Adds Real-Time Audio Translation Enablement as 5th base score factor (10 points binary, awarded uniformly across all SERPs). Base score range 0–80 → 0–90. Maximum effective score 88 → 99. The v3.0 three-stage architecture, four pre-v3.1 base score factors, Bayesian Reviews formula, Reliability multiplier, tier definitions, and Suspended-not-Platform-suspended distinction are preserved unchanged.
-
-- **v3.0** (April 2026) — Initial public release. Three-stage architecture (Filter → Tier → Score). Four base score factors (Availability, Experience, Credentials, Bayesian-weighted Reviews). Reliability Score multiplier with cold-start handling. Supersedes the unpublished v2.x drafts.
+- **v3.3 — August 2026.** Adds the approved Credential Breadth formula and corrected Talk Now-local Reliability model; aligns experience coverage, Review System inputs, 97-language context, and pre-launch status.
+- **v3.1 — May 2026.** Added Real-Time Audio Translation Enablement as the fifth base-score factor.
+- **v3.0 — April 2026.** Initial Filter → Tier → Score public architecture.
 
 ## Help Center
 
-For a plain-language explanation of how providers are ordered, see Really Global's Help Center "Why this order?" page (linked from every search results page, available in all 57 supported languages).
+At launch, a plain-language “Why this order?” page will link here and will be available through Really Global's standard 97-language publication process.
 
-## Questions or Issues
+## Questions or discrepancies
 
-If you believe you've found a discrepancy between this specification and the production algorithm, or have questions about how the algorithm works, please open an issue on this repository.
+If the running product differs from the current public specification after implementation, or if a rule is unclear, please open an issue in this repository.
 
 ## License
 
-MIT License. See [`LICENSE`](./LICENSE) for details.
+MIT License. See [LICENSE](./LICENSE).
+

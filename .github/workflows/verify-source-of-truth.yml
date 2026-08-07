@@ -1,0 +1,35 @@
+name: Verify source of truth
+
+on:
+  pull_request:
+    paths:
+      - "README.md"
+      - "Default-Sort-Algorithm-v*.md"
+      - "default-sort.csv"
+      - "scripts/verify_source_of_truth.py"
+      - ".github/workflows/verify-source-of-truth.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "README.md"
+      - "Default-Sort-Algorithm-v*.md"
+      - "default-sort.csv"
+      - "scripts/verify_source_of_truth.py"
+      - ".github/workflows/verify-source-of-truth.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  verify-current-version:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Verify current published version
+        run: python scripts/verify_source_of_truth.py

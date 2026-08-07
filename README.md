@@ -10,6 +10,12 @@ See [Default-Sort-Algorithm-v3.3.md](./Default-Sort-Algorithm-v3.3.md) for the f
 
 Really Global is pre-launch. v3.3 is the approved implementation target; this repository does not claim that Default Sort is already running in production. When implementation begins, the product and public specification must be released and maintained in lockstep.
 
+## Authoritative source and change control
+
+[Default-Sort-Algorithm-v3.3.md](./Default-Sort-Algorithm-v3.3.md) on the `main` branch is the single authoritative published specification for algorithm v3.3. This README and [default-sort.csv](./default-sort.csv) must identify the same current version.
+
+Really Global's internal Confluence BRD is the product-requirements and approval record; it is not a separate public specification. After a change is approved internally, it must be published through a GitHub pull request and merged to `main` before it becomes part of the authoritative published specification. Once the algorithm is implemented, the running code and the published specification must remain in lockstep.
+
 ## What Default Sort does
 
 Every marketplace must display results in some order. Without a disclosed rule, the database still creates an accidental and unstable order. Neutrality therefore does not mean randomness. It means that the same published, non-clinical rules apply consistently and that providers cannot buy placement.

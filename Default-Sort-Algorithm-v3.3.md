@@ -146,7 +146,9 @@ Let n equal the number of qualifying groups represented:
 
 The formula counts groups, never individual records. One license and five licenses produce the same Permission-to-practice group. One degree and several degrees produce the same Academic-education group. One certificate and several certificates produce the same Professional-training group.
 
-Only complete records eligible for public display can establish a group. An expired License, Registration, Permit, or Professional Certificate does not count. A credential marked as not expiring may count while it remains eligible for public display. An Academic Degree records completed education and does not require a current-practice status. Missing, incomplete, hidden, or otherwise ineligible records do not count.
+Except for the migrated records described below, only complete records eligible for public display can establish a group. An expired License, Registration, Permit, or Professional Certificate does not count. A credential marked as not expiring may count while it remains eligible for public display. An Academic Degree records completed education and does not require a current-practice status. Missing, incomplete, hidden, or otherwise ineligible records do not count.
+
+**Migrated credential records.** Once credential records are read from the unified credential record (`CREDENTIAL_SOURCE_MODE=unified`), a record written by the one-time migration from the legacy credential record, and not yet edited by the provider, counts the way the legacy record it came from counted: a migrated License establishes Permission to practice, a migrated Academic Degree establishes Academic education, a migrated Professional Certificate establishes Professional training, and a migrated Professional Membership establishes no group. Whether a migrated License or Professional Certificate is current is decided by the expiry year on the legacy record. Completeness is not required for these records. Once the provider edits a migrated record, that record follows the complete-record rule above. A record the provider creates is never treated as migrated.
 
 Professional Membership records do not count. Under Supervision and No license required are statuses, not credential records, and do not establish a group. A provider in a jurisdiction where no permission-to-practice credential exists may earn up to 15 points through Academic education and Professional training.
 
@@ -351,6 +353,7 @@ Providers cannot purchase a score, factor weight, tier, or position. Verificatio
 
 ## Version history
 
+- **v3.3 amendment, October 2026.** Adds the migrated credential records exception to Credential Breadth, so that moving to the unified credential record does not change any provider's credential groups (RGDEV-1927, comment 34511). No other rule, weight, or point value changes.
 - **v3.3 — August 2026.** Replaces record-count credential scoring with the approved Credential Breadth formula: three unweighted groups, counted once each, scored 0/10/15/20. Expands the Experience factor to every Therapist and Nurses & More permission status while preserving category-specific experience fields. Incorporates the corrected Talk Now-local Reliability model, neutral cold start, Review System population alignment, 97-language context, and truthful pre-launch status. Supersedes the unpublished v3.2 target.
 - **v3.1 — May 2026.** Added Real-Time Audio Translation Enablement as a fifth base-score factor, raising the base-score maximum from 80 to 90.
 - **v3.0 — April 2026.** Introduced Filter → Tier → Score, four base-score factors, Bayesian reviews, reliability, and deterministic tiebreakers.

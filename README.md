@@ -40,7 +40,7 @@ The five base-score factors are:
 
 - **Ordering, not clinical ranking.** A position is not a claim that one provider is clinically better or right for a particular client.
 - **Attributed and operational inputs.** The rules use provider attestations, client ratings, independent verification outcomes, and disclosed service events.
-- **No paid placement.** A provider cannot buy a score, tier, or position, and no provider can pay Really Global for placement. Verification is a paid service from Certn, an independent third party: the provider pays Certn, and the fee goes to Certn, not to Really Global. Paying for verification does not buy Verified status or any position; Certn's result decides it.
+- **No paid placement.** A provider cannot buy a score, tier, or position, and no provider can pay Really Global for placement. Verification is performed by Certn, an independent third party, and is paid for by the provider. Paying for verification does not buy Verified status or any position; Certn's result decides it.
 - **Client choice controls.** Filters, user-selected sorts, semantic relevance, explicit matching preferences, and the client's own decision may change or override the default order.
 - **Open and versioned.** Material changes to the running algorithm require a matching update here in the same release window once the algorithm is implemented.
 
@@ -54,7 +54,7 @@ The five base-score factors are:
 
 ## Version history
 
-- **v3.4, October 2026.** "Anyone available now" fan-out rings count toward the Reliability Score like named-provider rings, and fan-out rings providers in Default Sort order. Verification is described as a paid Certn service whose fee goes to Certn. Carries forward the v3.3 migrated credential records amendment. No factor, weight, or point value changes.
+- **v3.4, October 2026.** "Anyone available now" fan-out rings count toward the Reliability Score like named-provider rings, and fan-out rings providers in Default Sort order. Verification is described as a paid service performed by Certn. Carries forward the v3.3 migrated credential records amendment. No factor, weight, or point value changes.
 - **v3.3 amendment, October 2026.** Migrated credential records keep the Credential Breadth credit their legacy record earned until the provider edits them.
 - **v3.3 — August 2026.** Adds the approved Credential Breadth formula and corrected Talk Now-local Reliability model; aligns experience coverage, Review System inputs, 97-language context, and pre-launch status.
 - **v3.1 — May 2026.** Added Real-Time Audio Translation Enablement as the fifth base-score factor.

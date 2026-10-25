@@ -51,6 +51,7 @@ The five base-score factors are:
 
 ## Version history
 
+- **v3.3 amendment, October 2026.** Migrated credential records keep the Credential Breadth credit their legacy record earned until the provider edits them.
 - **v3.3 — August 2026.** Adds the approved Credential Breadth formula and corrected Talk Now-local Reliability model; aligns experience coverage, Review System inputs, 97-language context, and pre-launch status.
 - **v3.1 — May 2026.** Added Real-Time Audio Translation Enablement as the fifth base-score factor.
 - **v3.0 — April 2026.** Initial Filter → Tier → Score public architecture.

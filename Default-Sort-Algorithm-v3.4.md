@@ -308,8 +308,9 @@ Default Sort applies when the platform displays a provider list without an expli
 
 - provider directory and navigation pages;
 - specialty and location pages;
-- navigation-style search results where there is no relevance signal; and
-- the default Find Matches order before a client supplies matching preferences.
+- navigation-style search results where there is no relevance signal;
+- the default Find Matches order before a client supplies matching preferences; and
+- Therapy Groups and Support Groups listings, as described below.
 
 Default Sort does not run by itself when:
 
@@ -320,6 +321,18 @@ Default Sort does not run by itself when:
 For semantic search, tier order still dominates. Semantic relevance is the primary within-tier key, and Default Sort final score is the tiebreaker. The Stage 1 visibility filter is applied after retrieval because calendar availability and Talk Now state change too quickly to be treated as static search metadata.
 
 A user-selected sort changes the order of the providers who pass Stage 1. It does not change who passes Stage 1.
+
+### Therapy Groups and Support Groups
+
+Groups are ordered by this same algorithm, not by an order of their own. A group is ranked as its host would be, with one input that belongs to the group itself. No formula, weight, threshold, multiplier value or tiebreaker changes; this section only says what each stage reads for a group.
+
+1. **Filter.** A group is shown only while it has at least one open session with a seat left that starts within the same 14-day window. Talk Now does not apply to groups.
+2. **Tier.** The host's Verified status. Groups never have Talk Now, so a group with a Verified host is in Tier 2 and a group with a Not Verified host is in Tier 4.
+3. **Score.** Factor 1, Amount of Availability, counts the group's own open sessions in the 14-day window, with the same formula. Factors 2 to 5 (Experience, Credential Breadth, Client Reviews and Translation Enablement) are the host's. Translation Enablement is a ranking input only and is not a promise that a group session is translated.
+4. **Multiplier.** None. The Reliability multiplier applies only inside the Talk Now tiers.
+5. **Tiebreakers.** final_score descending, then the host's profile_updated_at descending, then the group's ID ascending.
+
+Groups are not ordered by how soon their next session starts, just as providers are not ordered by how soon their next opening is.
 
 ### Talk Now "Anyone available now" fan-out
 
@@ -379,6 +392,7 @@ A Company pays for the independent verification process, not for placement. Paym
 
 ## Version history
 
+- **v3.4 scope addition, November 2026.** Therapy Groups and Support Groups listings are ordered by Default Sort (see "Therapy Groups and Support Groups" under "Where Default Sort applies"), replacing a separate soonest-first group order. No factor, weight, point value, gate, tier, multiplier value, or tiebreaker changes.
 - **v3.4, October 2026.** Talk Now "Anyone available now" fan-out rings now count toward the Reliability Score exactly like rings to a named provider: Fast, On-Time, or Miss within the same 60-second window, with the same miss consequences, and counting toward the five-event history threshold. A ring stopped early creates no event. This reverses the v3.3 rule that fan-out non-answers were operational-only. Fan-out ring order now uses Default Sort order within the candidate pool (Tier 1 before Tier 3, then final_score, then tiebreakers), replacing the separate fan-out fairness logic, and the specification discloses that Not Verified providers will rarely be reached when 9 or more Verified providers are active. Verification wording is corrected: verification is performed by Certn, an independent third party, and paid for by the provider, and paying does not buy Verified status or position. No factor, weight, point value, gate, tier, multiplier value, or tiebreaker changes.
 - **v3.3 — August 2026.** Replaces record-count credential scoring with the approved Credential Breadth formula: three unweighted groups, counted once each, scored 0/10/15/20. Expands the Experience factor to every Therapist and Nurses & More permission status while preserving category-specific experience fields. Incorporates the corrected Talk Now-local Reliability model, neutral cold start, Review System population alignment, 97-language context, and truthful pre-launch status. Supersedes the unpublished v3.2 target.
 - **v3.1 — May 2026.** Added Real-Time Audio Translation Enablement as a fifth base-score factor, raising the base-score maximum from 80 to 90.
